@@ -6,3 +6,8 @@ This repository contains python notebooks implementing the **series solution** d
 The work investigates the equilibrium shapes of a slender elastica under gravity when augmented with **intrinsic sensing and distributed actuation**. The feedback strategy is modeled via convolution with Gaussian kernels, and both **local** and **nonlocal** sensing/actuation regimes are considered.
 
 ---
+## Reference
+
+If you use these notebooks, please cite:
+
+> Mohanraj, A. & Prasath, S. G. (2026). *Morphing of and writing with a scissor linkage mechanism*. arXiv:2509.XXXXX
