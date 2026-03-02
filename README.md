@@ -10,4 +10,4 @@ The work investigates the equilibrium shapes of a slender elastica under gravity
 
 If you use these notebooks, please cite:
 
-> Mohanraj, A. & Prasath, S. G. (2026). *Morphing of and writing with a scissor linkage mechanism*. arXiv:2509.XXXXX
+> Mohanraj, A. & Prasath, S. G. (2026). *Morphing of and writing with a scissor linkage mechanism*. arXiv:2602.14958
