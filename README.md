@@ -46,7 +46,7 @@ Three plots: deployed mechanism overlaid on the target curve, curvature profiles
 
 ### Changing the target
 
-Replace `StarTargetCurve` with any class exposing `target_coords` ($(N+1)\times 2$ array), `target_curvatures` (length-$N$ tensor), `s_total` (float), and `initial_tangent_angle` (float). For analytically defined curves $y = f(x)$, compute $\kappa^t_j = y'' / (1 + y'^2)^{3/2}$ directly. For point-set inputs, fit a spline first.
+Replace `StarTargetCurve` with any class exposing `target_coords` ($(N+1)\times 2$ array), `target_curvatures` (length - $N$ tensor), `s_total` (float), and `initial_tangent_angle` (float). For analytically defined curves $y = f(x)$, compute $\kappa^t_j = y'' / (1 + y'^2)^{3/2}$ directly. For point-set inputs, fit a spline first.
 
 ---
 
