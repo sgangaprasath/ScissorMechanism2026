@@ -4,7 +4,7 @@ Two notebooks, two inverse-design tasks. Both use the same differentiable kinema
 
 ## `ShapeMorphingTask.ipynb`
 
-**What it does:** Given a target planar curve, find $\{\alpha_j\}$ and a target actuation angle $\Psi^*$ so the deployed *shape* of the mechanism  meaning its full centerline  approximates that curve when $\Psi = \Psi^*$.
+**What it does:** Given a target planar curve, find $\{\alpha_j\}$ and a target actuation angle $\Psi^c$ so the deployed *shape* of the mechanism  meaning its full centerline  approximates that curve when $\Psi = \Psi^c$.
 
 This is the static task (§4.1 of the thesis): one snapshot, one actuation angle, match the entire body of the mechanism to the curve.
 
@@ -15,8 +15,8 @@ This is the static task (§4.1 of the thesis): one snapshot, one actuation angle
 **Forward model.** `ScissorInverseDesign` is a `torch.nn.Module` whose `forward()` method runs the forward kinematicd and returns two things: the center positions $\{\mathbf{r}_j\}$ and the per-unit curvatures $\{\kappa_j\}$. The forward pass does, in order:
 
 1. *Angle recursion* — propagates $\phi_j$ from unit to unit using the law-of-cosines compatibility relation (each pair of neighboring units forms a constrained quadrilateral).
-2. *Effective rotation* — converts $\phi_j$ and $\alpha_j$ to $\phi^*_j$, the rotation that unit $j$ contributes to the mechanism's global orientation.
-3. *Global orientations* — accumulates $\phi^*_j$ to get the absolute direction of each member.
+2. *Effective rotation* — converts $\phi_j$ and $\alpha_j$ to $\phi^c_j$, the rotation that unit $j$ contributes to the mechanism's global orientation.
+3. *Global orientations* — accumulates $\phi^c_j$ to get the absolute direction of each member.
 4. *Positions* — integrates those directions scaled by $l$ to get $\{\mathbf{r}_j\}$.
 5. *Curvature* — evaluates the closed-form expression $\kappa_j = 2(2\alpha_j-1) / [4\alpha_j l (1-\alpha_j) \sin(\phi_j/2)]$ at each unit.
 
@@ -26,7 +26,7 @@ This is the static task (§4.1 of the thesis): one snapshot, one actuation angle
 |---|---|---|
 | $\alpha_j$ (`alpha_logits`) | sigmoid | $(0.3,\; 0.7)$ |
 | $l$ (`log_l`) | exp | $(0, \infty)$ |
-| $\Psi^*$ (`psi_star`) | direct (radians) | — |
+| $\Psi^c$ (`psi_star`) | direct (radians) | — |
 | $\beta_0$ (`init_rot`) | direct (radians) | — |
 
 The sigmoid bound $(0.3, 0.7)$ keeps units away from the degenerate limits while covering both positive and negative curvature regimes ($\alpha > 0.5$ and $\alpha < 0.5$ respectively).
@@ -42,7 +42,7 @@ The sigmoid bound $(0.3, 0.7)$ keeps units away from the degenerate limits while
 
 ### Output
 
-Three plots: deployed mechanism overlaid on the target curve, curvature profiles compared side by side, and the optimized $\alpha^*_j$ sequence with shading indicating sign of curvature. You also get printed values of $\Psi^*$, $\beta_0$, and $l$.
+Three plots: deployed mechanism overlaid on the target curve, curvature profiles compared side by side, and the optimized $\alpha^c_j$ sequence with shading indicating sign of curvature. You also get printed values of $\Psi^c$, $\beta_0$, and $l$.
 
 ### Changing the target
 
@@ -63,8 +63,8 @@ This is the dynamic task (§4.2): the mechanism is no longer evaluated at one an
 **Forward model.** `StaticDesignOptimizer` runs the full $K$-step actuation sweep in a **single vectorized forward pass** — the entire $K \times N$ grid of angles is solved simultaneously, no Python loop over $\Psi$. This is necessary for reasonable speed at 24000 training epochs. The pass computes:
 
 1. *Internal angles* $\phi_j(\Psi_k)$ — the compatibility system is solved over the full $(K \times N)$ grid using batched law-of-cosines. The first unit's angle is pinned to $\Psi_k$ exactly.
-2. *Effective rotations* $\phi^*_j(\Psi_k)$ via the same half-angle relation as the shape-morphing notebook.
-3. *Cumulative orientations* via `torch.cumsum` over $\phi^*$.
+2. *Effective rotations* $\phi^c_j(\Psi_k)$ via the same half-angle relation as the shape-morphing notebook.
+3. *Cumulative orientations* via `torch.cumsum` over $\phi^c$.
 4. *Tip position* $\mathbf{r}_{\mathrm{tip}}(\Psi_k)$ — reduced to a dot product over the $N$ units, returning a $K \times 2$ trajectory tensor.
 
 **Arc-length alignment.** This is the non-obvious step. The mechanism trajectory is parameterized by $\Psi$, but the target is parameterized by arc length $s$. These don't coincide, and the mapping between them shifts as $\{\alpha_j\}$ changes during optimization. `resample_to_target` performs differentiable linear interpolation (via `torch.searchsorted`) of the mechanism's curvature onto the fixed target arc-length grid $\{s^t_k\}$. The gradients pass cleanly through this interpolation back to $\alpha_j$ and $l$.
