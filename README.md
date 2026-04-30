@@ -1,13 +1,6 @@
 # Morphing of and writing with a scissor linkage mechanism
 ---
-## Reference
-
-If you use these notebooks, please cite:
-
-> Mohanraj, A. & Prasath, S. G. (2026). *Morphing of and writing with a scissor linkage mechanism*. arXiv:2602.14958
 Two notebooks, two inverse-design tasks. Both use the same differentiable kinematic engine; what differs is what they ask the optimizer to do. If you have not read the thesis, the short version is: a scissor mechanism is a chain of $N$ units, each unit is two rigid arms crossed at a pin joint, and the only thing you tune per unit is where along the arm that pin sits  the **aspect ratio** $\alpha_j$. Changing $\alpha_j$ changes how much that unit curves, which propagates to everything downstream. The whole mechanism deploys from a single actuated angle $\Psi$.
-
----
 
 ## `ShapeMorphingTask.ipynb`
 
@@ -108,3 +101,9 @@ torch    numpy    scipy    matplotlib
 ```
 
 Both notebooks detect CUDA and fall back to CPU automatically.
+---
+## Reference
+
+If you use these notebooks, please cite:
+
+> Mohanraj, A. & Prasath, S. G. (2026). *Morphing of and writing with a scissor linkage mechanism*. arXiv:2602.14958
